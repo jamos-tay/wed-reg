@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://v4-alpha.getbootstrap.com/examples/jumbotron/ -->
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="./index_files/logo.ico">
+		<title>Register</title>
+		<script src="socket.io/socket.io.js"></script>
+		<!-- Bootstrap core CSS -->
+		<link href="./index_files/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<div id="StayFocusd-infobar" style="display:none;">
+			<img src="chrome-extension://laankejkbhbdhmipfmgcngdelahlfoji/common/img/eye_19x19_red.png">
+			<span id="StayFocusd-infobar-msg"></span>
+			<span id="StayFocusd-infobar-links">
+			<a id="StayFocusd-infobar-never-show">hide forever</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a id="StayFocusd-infobar-hide">hide once</a>
+			</span>
+		</div>
+		<div class="container col-md-8 col-md-offset-2">
+		<p>Name: </p>
+		<input list="reg-names" name="reg-name" id="reg-name">
+		<datalist id="reg-names">
+		</datalist>
+		<button type="button" onclick="Send()">Register</button>
+		<p>Table Number: <span id="table-no"></span></p>
+		
+		  <table class="table table-bordered">
+			<thead>
+			  <tr>
+				<th>Name</th>
+				<th>Table</th>
+				<th>Registered</th>
+			  </tr>
+			</thead>
+			<tbody id="table-rows">
+			</tbody>
+		  </table>
+		  </div>
+		<!-- Bootstrap core JavaScript
+			================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="./index_files/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+		<script src="./index_files/bootstrap.min.js"></script>
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+		<script src="./index_files/ie10-viewport-bug-workaround.js"></script>
+		<script type="text/javascript">
+			var socket = io();
+			var names = {};
+			function Send(){
+				name = $("#reg-name").val()
+				if(!(name in names)){
+					alert("Can't find name");
+					return;
+				}
+				socket.emit('send', name);
+			}
+			
+			function updateTable(){
+				var tablerows = "";
+				for (var property in names) {
+					if (names.hasOwnProperty(property)) {
+						var newRow = "";
+						newRow += "<tr>";
+						newRow += "<td>" + property + "</td>";
+						newRow += "<td>" + names[property].tnum + "</td>";
+						newRow += "<td><span class=\"" + (names[property].reg ? "regY" : "regN") + "\">" + (names[property].reg ? "Yes" : "No") + "</span</td>";
+						newRow += "</tr>";
+						
+						tablerows += newRow;
+					}
+				}
+				console.log(tablerows);
+				document.getElementById("table-rows").innerHTML = tablerows;
+			}
+			
+			socket.on('names', function(msg){
+				names = msg;
+				var options = '';
+				
+				for (var property in names) {
+					if (names.hasOwnProperty(property)) {
+						console.log(property);
+						options += '<option value="' + property + '" />';
+					}
+				}
+
+				document.getElementById('reg-names').innerHTML = options;
+				updateTable();
+			});
+			
+			$("#reg-name").on('input', function() {
+				if($(this).val() in names){
+					$('#table-no').text(names[$(this).val()].tnum);
+				} else {
+					$('#table-no').text('');
+				}
+			});
+			
+		</script>
+	</body>
+</html>

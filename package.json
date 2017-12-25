@@ -1,0 +1,19 @@
+{
+  "name": "wed-reg",
+  "version": "1.0.0",
+  "description": "Wed Reg",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.6",
+  },
+  "engines" : {
+    "node": "4.4.x"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jamos Tay",
+  "license": "ISC"
+}
