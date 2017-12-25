@@ -36,8 +36,6 @@ function startServer(){
 
 
 	const io = socketIO(server.listen(PORT, () => console.log(`Listening on ${ PORT }`)));
-	
-	console.log(names);
 
 	var disseminate = function(){
 		for(var i = 0; i < sockets.length; i++){
@@ -46,16 +44,14 @@ function startServer(){
 	};
 	
 	io.on('connection', function(socket){
-		console.log("connected" + socket);
 		sockets.push(socket);
 		socket.emit('names', names);
 			
 		socket.on('send', function(name){
-			console.log(name);
-			if(!(name in names)){
+			if(!(name[0] in names)){
 				return;
 			}
-			names[name].reg = true;
+			names[name[0]].reg = name[1];
 			disseminate();
 		});
 	

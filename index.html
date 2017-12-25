@@ -23,25 +23,30 @@
 			</span>
 		</div>
 		<div class="container col-md-8 col-md-offset-2">
-		<p>Name: </p>
-		<input list="reg-names" name="reg-name" id="reg-name">
-		<datalist id="reg-names">
-		</datalist>
-		<button type="button" onclick="Send()">Register</button>
-		<p>Table Number: <span id="table-no"></span></p>
-		
-		  <table class="table table-bordered">
-			<thead>
-			  <tr>
-				<th>Name</th>
-				<th>Table</th>
-				<th>Registered</th>
-			  </tr>
-			</thead>
-			<tbody id="table-rows">
-			</tbody>
-		  </table>
-		  </div>
+			<p>Guests: <span id="guests"></span></p>
+			<p>
+				<span>Name: </span>
+				<input list="reg-names" name="reg-name" id="reg-name">
+				<datalist id="reg-names">
+				</datalist>
+				<button type="button" onclick="Send('')">Register</button>
+			<p>Table Number: <span id="table-no"></span></p>
+			</p>
+			<div id="table-div">
+				<span>Name search: </span><input id="search-name">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Table</th>
+							<th>Registered</th>
+						</tr>
+					</thead>
+					<tbody id="table-rows">
+					</tbody>
+				</table>
+			</div>
+		</div>
 		<!-- Bootstrap core JavaScript
 			================================================== -->
 		<!-- Placed at the end of the document so the pages load faster -->
@@ -53,55 +58,82 @@
 		<script type="text/javascript">
 			var socket = io();
 			var names = {};
-			function Send(){
-				name = $("#reg-name").val()
+			function Send(name, state){
+				if(name == ''){
+					name = $("#reg-name").val()
+					state = true;
+				}
 				if(!(name in names)){
 					alert("Can't find name");
 					return;
 				}
-				socket.emit('send', name);
+				socket.emit('send', [name, state]);
 			}
-			
 			function updateTable(){
+				var totalGuests = 0;
+				var regGuests = 0;
 				var tablerows = "";
 				for (var property in names) {
 					if (names.hasOwnProperty(property)) {
+						totalGuests++;
 						var newRow = "";
-						newRow += "<tr>";
+						newRow += "<tr name=\"" + property + "\">";
 						newRow += "<td>" + property + "</td>";
 						newRow += "<td>" + names[property].tnum + "</td>";
-						newRow += "<td><span class=\"" + (names[property].reg ? "regY" : "regN") + "\">" + (names[property].reg ? "Yes" : "No") + "</span</td>";
+						if(names[property].reg){
+							regGuests++;
+							newRow += "<td><span class=\"regY\">Yes</span><button type=\"button\" class=\"reg-btn\" onclick=\"Send('" + property + "', false)\">Unregister</button></td>";
+						} else {
+							newRow += "<td><span class=\"regN\">No</span><button type=\"button\" class=\"reg-btn\" onclick=\"Send('" + property + "', true)\">Register</button></td>";
+						}
 						newRow += "</tr>";
 						
 						tablerows += newRow;
 					}
 				}
-				console.log(tablerows);
 				document.getElementById("table-rows").innerHTML = tablerows;
+				document.getElementById("guests").innerHTML = regGuests + "/" + totalGuests + " (" + parseFloat(regGuests * 100.0 / totalGuests).toFixed(2) + "%)";
+				filterTable();
 			}
 			
+			function filterTable(){
+				var searchName = $("#search-name").val();
+				$('tr').each(function(){
+					name = $(this).attr('name');
+					if(name == 'undefined'){
+						return;
+					}
+					if(name.toLowerCase().indexOf(searchName.toLowerCase()) !== -1){
+						$(this).show();
+					} else {
+						$(this).hide();
+					}
+				});
+			}
 			socket.on('names', function(msg){
 				names = msg;
 				var options = '';
 				
 				for (var property in names) {
 					if (names.hasOwnProperty(property)) {
-						console.log(property);
 						options += '<option value="' + property + '" />';
 					}
 				}
-
+			
 				document.getElementById('reg-names').innerHTML = options;
 				updateTable();
 			});
 			
 			$("#reg-name").on('input', function() {
-				if($(this).val() in names){
-					$('#table-no').text(names[$(this).val()].tnum);
+				var searchName = $(this).val();
+				if(searchName in names){
+					$('#table-no').text(names[searchName].tnum);
 				} else {
 					$('#table-no').text('');
 				}
 			});
+			
+			$("#search-name").on('input', filterTable);
 			
 		</script>
 	</body>
