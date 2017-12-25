@@ -19,11 +19,23 @@ function startServer(){
 	const PORT = process.env.PORT || 3000;
 	const INDEX = path.join(__dirname, 'index.html');
 
-	const server = express()
-	  .use((req, res) => res.sendFile(INDEX) )
-	  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+	const server = express();
 
-	const io = socketIO(server);
+	server.get('/', function(req, res){
+        res.sendFile(__dirname + '/index.html');
+    });
+    
+    server.get('/index.html', function(req, res){
+        res.sendFile(__dirname + '/index.html');
+    });
+
+    server.use('/index_files', express.static('index_files'));
+    server.use('/assets', express.static('assets'));
+
+	
+
+
+	const io = socketIO(server.listen(PORT, () => console.log(`Listening on ${ PORT }`)));
 	
 	console.log(names);
 
