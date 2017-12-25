@@ -1,11 +1,5 @@
 function startServer(){
 	//process.env.EDGE_NATIVE = "./native/win32/ia32/4.1.1/edge_nativeclr";
-	var port = process.env.PORT || 8080;
-	var self = this;
-	var express = require('express');
-	var app = express();
-	var http = require('http').Server(app);
-	var io = require('socket.io')(http);
 	var names = require('./names.json');
 	var sockets = [];
 	for (var property in names) {
@@ -18,22 +12,19 @@ function startServer(){
 		}
 	}
 	
-	app.get('/', function(req, res){
-		res.sendFile(__dirname + '/index.html');
-	});
-	
-	app.get('/index.html', function(req, res){
-		res.sendFile(__dirname + '/index.html');
-	});
+	const express = require('express');
+	const socketIO = require('socket.io');
+	const path = require('path');
 
-	app.use('/index_files', express.static('index_files'));
-	app.use('/assets', express.static('assets'));
+	const PORT = process.env.PORT || 3000;
+	const INDEX = path.join(__dirname, 'index.html');
+
+	const server = express()
+	  .use((req, res) => res.sendFile(INDEX) )
+	  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+	const io = socketIO(server);
 	
-	//404
-	app.use(function(req, res, next) {
-		res.status(404).send('404: Sorry cant find that!');
-	});
-		
 	console.log(names);
 
 	var disseminate = function(){
@@ -58,9 +49,5 @@ function startServer(){
 	
 	});
 	
-	//http.listen(port, 511, function(){
-	app.listen(port, function(){
-		console.log('listening on ' + 8080);
-	});
 }
 startServer();
