@@ -5,7 +5,9 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.13.4",
-    "socket.io": "^1.4.6"
+    "socket.io": "^1.4.6",
+    "connect": "^3.4.1",
+    "client-sessions": "^0.7.0"
   },
   "engines" : {
     "node": "4.4.x"
