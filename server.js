@@ -1,5 +1,6 @@
 function startServer(){
 	//process.env.EDGE_NATIVE = "./native/win32/ia32/4.1.1/edge_nativeclr";
+	var port = process.env.PORT || 8080;
 	var self = this;
 	var express = require('express');
 	var app = express();
@@ -58,8 +59,8 @@ function startServer(){
 	});
 	
 	//http.listen(port, 511, function(){
-	http.listen(3000, "localhost", function(){
-		console.log('listening on ' + 3000);
+	app.listen(port, function(){
+		console.log('listening on ' + 8080);
 	});
 }
 startServer();
