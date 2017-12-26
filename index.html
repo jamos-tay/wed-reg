@@ -124,6 +124,10 @@
 				updateTable();
 			});
 			
+			socket.on('disconnect', function(){
+				socket.disconnect();
+			});
+			
 			$("#reg-name").on('input', function() {
 				var searchName = $(this).val();
 				if(searchName in names){
