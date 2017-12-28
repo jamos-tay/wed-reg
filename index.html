@@ -40,6 +40,7 @@
 					 name="reg" value="unreg">
 					<label for="view-unreg">Unregistered</label>
 				  </div>
+				<button type="button" class="search-btn" onclick="filterTable()">Search</button>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -149,9 +150,19 @@
 					$('#table-no').text('');
 				}
 			});
-			$('input[type=radio]').change(filterTable);
-			$("#search-name").on('input', filterTable);
-			$("#search-table").on('input', filterTable);
+			$("#search-name").keyup(function(event) {
+				if (event.keyCode === 13) {
+					filterTable();
+				}
+			});
+			$("#search-table").keyup(function(event) {
+				if (event.keyCode === 13) {
+					filterTable();
+				}
+			});
+			//$('input[type=radio]').change(filterTable);
+			//$("#search-name").on('input', filterTable);
+			//$("#search-table").on('input', filterTable);
 			
 		</script>
 	</body>
