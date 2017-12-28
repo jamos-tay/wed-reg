@@ -24,17 +24,22 @@
 		</div>
 		<div class="container col-md-8 col-md-offset-2">
 			<p>Guests: <span id="guests"></span></p>
-			<p>
-				<span>Name: </span>
-				<input list="reg-names" name="reg-name" id="reg-name">
-				<datalist id="reg-names">
-				</datalist>
-				<button type="button" onclick="Send('')">Register</button>
-			<p>Table Number: <span id="table-no"></span></p>
-			</p>
 			<div id="table-div">
 				<span>Name search: </span><input id="search-name">
 				<span> Table search: </span><input id="search-table">
+				  <div>
+					<input type="radio" id="view-all"
+					 name="reg" value="all" checked>
+					<label for="view-all">All</label>
+
+					<input type="radio" id="view-reg"
+					 name="reg" value="reg">
+					<label for="view-reg">Registered</label>
+
+					<input type="radio" id="view-unreg"
+					 name="reg" value="unreg">
+					<label for="view-unreg">Unregistered</label>
+				  </div>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -78,7 +83,7 @@
 					if (names.hasOwnProperty(property)) {
 						totalGuests++;
 						var newRow = "";
-						newRow += "<tr name=\"" + property + "\" table=\"" + names[property].tnum + "\">";
+						newRow += "<tr name=\"" + property + "\" table=\"" + names[property].tnum + "\" reg=\"" + names[property].reg + "\">";
 						newRow += "<td>" + property + "</td>";
 						newRow += "<td>" + names[property].tnum + "</td>";
 						if(names[property].reg){
@@ -103,10 +108,13 @@
 				$('tr').each(function(){
 					name = $(this).attr('name');
 					table = $(this).attr('table');
+					reg = $(this).attr('reg');
 					if(name == 'undefined'){
 						return;
 					}
-					if(name.toLowerCase().indexOf(searchName.toLowerCase()) !== -1 && table.toLowerCase().indexOf(searchTable.toLowerCase()) !== -1){
+					if(name.toLowerCase().indexOf(searchName.toLowerCase()) !== -1 && table.toLowerCase().indexOf(searchTable.toLowerCase()) !== -1
+						&& (!document.getElementById("view-reg").checked || (reg == 'true'))
+						&& (!document.getElementById("view-unreg").checked || (reg == 'false'))){
 						$(this).show();
 					} else {
 						$(this).hide();
@@ -115,6 +123,7 @@
 			}
 			socket.on('names', function(msg){
 				names = msg;
+				/*
 				var options = '';
 				
 				for (var property in names) {
@@ -124,6 +133,7 @@
 				}
 			
 				document.getElementById('reg-names').innerHTML = options;
+				*/
 				updateTable();
 			});
 			
@@ -139,7 +149,7 @@
 					$('#table-no').text('');
 				}
 			});
-			
+			$('input[type=radio]').change(filterTable);
 			$("#search-name").on('input', filterTable);
 			$("#search-table").on('input', filterTable);
 			
