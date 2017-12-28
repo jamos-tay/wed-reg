@@ -34,6 +34,7 @@
 			</p>
 			<div id="table-div">
 				<span>Name search: </span><input id="search-name">
+				<span> Table search: </span><input id="search-table">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -77,7 +78,7 @@
 					if (names.hasOwnProperty(property)) {
 						totalGuests++;
 						var newRow = "";
-						newRow += "<tr name=\"" + property + "\">";
+						newRow += "<tr name=\"" + property + "\" table=\"" + names[property].tnum + "\">";
 						newRow += "<td>" + property + "</td>";
 						newRow += "<td>" + names[property].tnum + "</td>";
 						if(names[property].reg){
@@ -98,12 +99,14 @@
 			
 			function filterTable(){
 				var searchName = $("#search-name").val();
+				var searchTable = $("#search-table").val();
 				$('tr').each(function(){
 					name = $(this).attr('name');
+					table = $(this).attr('table');
 					if(name == 'undefined'){
 						return;
 					}
-					if(name.toLowerCase().indexOf(searchName.toLowerCase()) !== -1){
+					if(name.toLowerCase().indexOf(searchName.toLowerCase()) !== -1 && table.toLowerCase().indexOf(searchTable.toLowerCase()) !== -1){
 						$(this).show();
 					} else {
 						$(this).hide();
@@ -138,6 +141,7 @@
 			});
 			
 			$("#search-name").on('input', filterTable);
+			$("#search-table").on('input', filterTable);
 			
 		</script>
 	</body>
